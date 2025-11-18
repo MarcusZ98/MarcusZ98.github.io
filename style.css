@@ -939,5 +939,9 @@ pre[class*="language-"] {
     font-size: 0.7em;
 }
 
+.logo {
+  font-size: 2rem;
+}
+
   
 }
