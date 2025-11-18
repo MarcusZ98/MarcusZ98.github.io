@@ -277,6 +277,10 @@ section {
     margin: 1.5rem 0;
 }
 
+.heading #typewriter {
+    font-size: 0.7em;
+}
+
 .projects-box{
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); /* 300–360 works too */
