@@ -273,13 +273,13 @@ section {
 
 .heading{
     text-align: center;
-    font-size: 7rem;
+    font-size: 5rem;
     margin: 5rem 0;
 }
 
 .projects-box{
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(500px, 1fr)); /* 300–360 works too */
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); /* 300–360 works too */
   gap: 2.4rem;
   align-items: start;   /* don’t center vertically; reduces collision risk */
 }
@@ -913,7 +913,9 @@ pre[class*="language-"] {
         margin: 2rem 0;
     }
     .about img{
-        width: 52vw;
+        min-width: 300px;
+        margin-bottom: -130px;
+        
     }
     .contact form{
         flex-direction: column;
@@ -923,6 +925,10 @@ pre[class*="language-"] {
       /* you can tweak padding on mobile if you want */
       padding: 1rem;
       font-size: 0.6em !important;
+    }
+
+    .heading {
+      font-size: 3rem;
     }
 
   
