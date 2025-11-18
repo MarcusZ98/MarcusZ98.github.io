@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Simple OpenAI Plugin</title>
+
+  <!-- Reuse your main stylesheet -->
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="prism.css">
+  
+</head>
+
+<body>
+<header class="header">
+
+    <!-- Logo -->
+    <a href="index.html#home" class="logo">
+      Marcus <span>Zibung</span>
+    </a>
+
+    <!-- Mobile Menu Icon -->
+    <i id="menu-icon"><img src="assets/Icons/HamburgerMenu.png" alt="" id="menu-img"></i>
+
+
+    <!-- Navbar Links -->
+    <nav class="navbar">
+      <a href="index.html#home">Home</a>
+      <a href="index.html#projects">Projects</a>
+      <a href="index.html#contact" class="mobile-contact">Contact</a>
+      <a href="index.html#about">About Me</a>
+
+    </nav>
+
+    <!-- Header CTA -->
+    <a href="index.html#contact" class="gradient-btn">Contact Me</a>
+
+</header>
+
+<section class="home">
+    <div class="home-content">
+      <h1>Stellar</h1>
+    </div>
+  </section>
+ 
+<section class="project-details" id="Overview">
+
+    <h3>Project Overview</h3>
+
+    <p>
+        Puzzle/Adventure game where you're playing as a star "Stella" who fell from the sky. In an attempt to find a way back home she makes a friend among the way.
+        <br><br>This project was part of my studies at Stockholm University during the spring of 2024 and was completed in collaboration with seven other students. It also marked my first introduction to Unreal Engine 5, as well as my initial experience working with blueprints and gaining a better understanding of how to integrate them with C++.
+        <br><br>Each of us had different roles, and mine was as a programmer, a position I shared with two other group members. While we each handled different aspects of the game, we also worked closely together to ensure that everyone adhered to similar design patterns, allowing us to seamlessly build on each other’s work.
+        <br><br>Although we collaborated on many aspects of the project, there were several implementations that I primarily worked on independently. I want to highlight these below and share some insights into my thought process.
+    </p>
+
+    <table class="nice-table">
+      <tr>
+        <th>Game Engine</th>
+        <td>Unreal Engine 5.3</td>
+      </tr>
+
+      <tr>
+        <th>Version Control</th>
+        <td>GitHub</td>
+      </tr>
+
+      <tr>
+        <th>IDE</th>
+        <td>JetBrains Rider</td>
+      </tr>
+
+      <tr>
+        <th>Platform</th>
+        <td>Windows</td>
+      </tr>
+
+      <tr>
+        <th>GitHub</th>
+        <td><a href="https://github.com/MarcusZ98/Stellar" target="_blank" rel="noopener noreferrer">GitHub Repository</a></td>
+      </tr>
+    </table>
+
+        <table class="nice-table" style="margin-top: 20px;">
+      <tr>
+        <th>Development Duration</th>
+        <td>6 weeks</td>
+      </tr>
+
+      <tr>
+        <th>Time of Development</th>
+        <td>Spring 2024</td>
+      </tr>
+
+      <tr>
+        <th>Number of Developers</th>
+        <td>8</td>
+      </tr>
+
+      <tr>
+        <th>My Role</th>
+        <td>Programmer</td>
+      </tr>
+
+    </table>
+
+        <h3>Full Playthrough</h3>
+
+    <video controls style="margin-top: 20px; border-radius: 10px;" autoplay muted loop playsinline><source src="Assets/Videos/Stellar/Full Playthrough.mp4" type="video/mp4"></video>
+
+</section>
+
+<section class="project-details" id="Dialougue System">
+
+    <h3>Dialogue System</h3>
+
+    <p>
+        When I began working on our dialogue system, I set a few key goals for myself:
+    </p>
+
+    <ul>
+        <li>Make it accessible for others to use</li>
+        <li>Allow for non-linear dialogue</li>
+        <li>Ensure it is easily expandable for future functionality.</li>
+    </ul>
+
+    <p>
+        As I progressed, I made adjustments to better achieve these goals. Below, I’ll explain some of my thought process and the reasoning behind the decisions I made along the way.
+    </p>
+
+    <h4>Accessible</h4>
+    <p>
+        My goal was to create a blueprint function that allowed the person implementing the dialogue to focus solely on adding the dialogue and determining how it would branch out based on different responses or game states. All the code managing the actual dialogue integration was designed to remain behind the scenes, inaccessible to the person implementing the dialogue. This was achieved by using a parent blueprint that contained all the functions except one, 'Dialogue,' where the implementer would add the dialogue and build the 'tree' structure.
+    </p>
+
+    <h4>Non-Linear</h4>
+    <p>To enable flexible traversal of the dialogue tree, I ensured that functionality was in place to accommodate various paths. The tree could switch branches based on a 'TreeIndex,' which could be set at any point depending on the dialogue choices. I also implemented the ability to jump backward in the tree, which proved useful in scenarios where, for example, an NPC asks a question and the player answers incorrectly. If you want to give the player multiple attempts, you would typically need to create numerous branches and switches. However, with the ability to jump backward, the NPC can simply repeat the question after a failed attempt, allowing for multiple retries without additional branches.
+    </p>
+
+    <h4>Expandable</h4>
+    <p>I encapsulated all of the dialogue within an Actor component, a decision made to allow dialogue to be easily added to any entity in the future. This approach proved valuable in the later stages of the game when we wanted multiple NPCs to be able of expressing dialogue. It not only made adding dialogue to various NPCs straightforward but also made it easier to edit. If we needed to change the appearance of the dialogue, we could simply make adjustments across the board within the dialogue blueprint.
+    </p>
+
+    <img src="Assets/Images/Stellar/Dialogue1.gif" alt="Dialogue System Example 1" >
+    <p class="media-text">First iteration of my dialogue system: In this stage, I implemented the dialogue window and the basic functionality to create and navigate a dialogue tree.</p>
+
+    <img src="Assets/Images/Stellar/Dialogue2.gif" alt="Dialogue System Example 2" >
+    <p class="media-text">This is the final result of the dialogue system. In this version, I've added animations to the NPC, and we've changed the interaction indicator from a nametag above the head to an outline. The dialogue widget has also been enhanced to better fit the overall theme.</p>
+
+    <h4>Afterthoughts</h4>
+    <p>This was my first assignment in the project, and it taught me a great deal about working with blueprints and creating flexible systems for future features. Given that this was developed in the early stages of the process, and we made many changes along the way, I’m pleased that it remained easy to work with throughout all iterations.
+    <br><br>The blueprint hierarchy and Actor component implementation significantly contributed to achieving my goals. However, one area I could improve on is ensuring that my work is easily understood by my peers. In the end, I was the one primarily implementing the dialogue trees, which worked out fine, but I didn’t receive feedback from others who actually used my implementation. While I did seek and receive feedback on the overall user-friendliness of the system, I believe I could have made additional improvements based on firsthand experience from others.</p>
+</section>
+
+<section class="project-details" id="Flowcharts">
+    <h3>Flowcharts</h3>
+    <p>One of the more challenging tasks our team faced was maintaining a clear vision of the game. To address this, I created flowcharts in Draw.io with the goal of keeping each mechanic as clear as possible and minimizing individual interpretation. Although this wasn't a programming-oriented task per se, I believe it was beneficial not only for me but also for the other programmers, providing us with a reference when implementing functionality.
+    <br><br>I decided to create two different flowcharts for each mechanic. The first was a simplified version that focused solely on gameplay events, while the second included all visual and audible events. I made this decision for two main reasons:</p>
+
+    <ul>
+        <li>I wanted my charts to be easy to understand at first glance, reducing the likelihood of misunderstandings. In the first version, I aimed to keep the charts as minimalistic as possible without sacrificing any essential functionality.</li>
+        <li style="margin-top: 20px;">I also wanted my charts to serve as a tool for those in my group responsible for VFX, animation, and sound. The second version was designed to be more easily understood by these roles, clearly outlining what was needed.</li>
+    </ul>
+
+    <p>Below, I’ve included a few examples to illustrate my two versions and their structure. I chose the simpler examples because, as you’ll see, even smaller functionalities can result in fairly large charts.</p>
+
+    <img src="Assets/Images/Stellar/Atlas.png" alt="Flowchart Atlas" style="max-width: 600px; margin-top: 30px;">
+    <p class="media-text">This is the atlas used to identify all nodes.</p>
+
+    <img src="Assets/Images/Stellar/Flowchart.png" alt="Flowchart Example" style="max-width: 600px;">
+    <p class="media-text">This was a simple flowchart for the "lamp" in the game.</p>
+
+</section>
+
+<section class="project-details" id="Animations">
+    <h3>Animations</h3>
+    <p>Let me start by saying that I did not create any of these animations, but I was responsible for their implementation into our game. Beyond gaining an understanding of how animations work in Unreal Engine, my primary goal was to ensure that the animation system was completely isolated from the rest of the game. I wanted to achieve this decoupling because it makes the system easier to iterate on and allows for more straightforward error checking without other parts of the game depending on it.
+    <br><br>I worked with various functionalities within the 'animation-blueprint-world,' including:</p>
+
+    <ul>
+        <li>Animation Blueprints</li>
+        <li>Animation Composites</li>
+        <li>Animation Sequences</li>
+        <li>Blend Spaces</li>
+        <li>State Machines</li>
+        <li>Animation Notifies</li>
+        <li>State Aliases and Conduits</li>
+    </ul>
+
+    <p>I implemented animations for four different characters in the game, but here I will focus primarily on the main player character, where I utilized all of these functionalities.</p>
+
+    <h4>Implementation Details</h4>
+    <p>The player's animations were managed within a state machine that responded to the player's actions. The state machine determined the appropriate animations by referencing variables from the player character.</p>
+
+    <img src="Assets/Images/Stellar/anim2.png">
+
+    <p>If we take a closer look at the 'Idle/Walk' state, you'll notice that I first implemented another state machine to manage the various idle animations. Additionally, there's a transition to the 'Walking' state, which is triggered based on the player's velocity—specifically, the length of the velocity vector, or speed. If the speed exceeds a certain threshold, the player transitions to walking; otherwise, they remain in the idle state. The walking animation itself is governed by this speed variable, using a blendspace to create a smooth transition. This approach not only enhances the fluidity of movement but also makes it easy to add, for example, a sprint animation at higher speeds.</p>
+
+    <img src="Assets/Images/Stellar/anim3.png">
+    <p>Another highlight to the animation of the player would be the 'Pulling' and 'Pushing' states, as shown in the first picture. These states need to change depending on whether the player is moving toward or away from the object they want to move. To determine the direction of movement, I use a dot product calculated from the player's movement vector, allowing the system to dynamically switch between the pulling and pushing animations based on the player's actions, like this:</p>
+
+    <img src="Assets/Images/Stellar/anim1.png">
+    <p>This allows me to check in the animation blueprint whether the dot product is above or below zero, and then make the transition accordingly, resulting in a seamless animation change.</p>
+
+    <img src="Assets/Images/Stellar/DragAndPullSmall.gif">
+    <p class="media-text">Example of the pulling and pushing animations in action.</p>
+</section>
+
+<section class="project-details" id="Takeaways">
+    <p>This project taught me a lot about working in Unreal Engine as it served as a first introduction to the engine. It gave me a great understanding of the framework unreal is built on and how to utilize it more effectively. It also gave me a great opportunity to delve into the visual scripting of Unreal Engine with blueprints and get more experience working with it. 
+    <br><br>For future projects I'll aim to focus much more on scalability as I've learned the importance it carries throughout the process of working on a project. Things and ideas develop during a project and to efficiently follow that development the code needs to be adaptable as well. 
+    <br><br>As for working in a team setting one of the key takeaways I had was the importance of having main responsibility for different aspects of a project. This not only makes it clear on what I can work on, but also helps to know who to turn to regarding questions about the project. For future projects I think this clear definition of responsibilities should play an ever bigger role and also define who has a say in certain questions. One of the issues during this project, which probably slowed us down a bit, was that every question raised about the game had to be discussed in a group setting which I don't believe is the most effective way in the long run.
+    <br><br>I overall had a great experience where I learned a lot and had fun doing it. I'm also very thankful for getting to work with such a great team! ❤️</p>
+</section>
+
+<section id="Gallery">
+
+<h3 style="align-items: center; display: flex; justify-content: center; font-size: 4em; margin-bottom: 20px;" >Gallery</h3>
+
+  <div class="gallery">
+    <div class="gallery-item">
+      <img src="Assets/Images/Stellar/gal1.png" alt="">
+    </div>
+    <div class="gallery-item">
+      <img src="Assets/Images/Stellar/gal2.jpg" alt="">
+    </div>
+    <div class="gallery-item">
+      <img src="Assets/Images/Stellar/gal3.png" alt="">
+    </div>
+    <div class="gallery-item">
+      <img src="Assets/Images/Stellar/gal4.gif" alt="">
+    </div>
+    <div class="gallery-item">
+      <img src="Assets/Images/Stellar/DragAndPullSmall.gif" alt="">
+    </div>
+    <div class="gallery-item">
+      <img src="Assets/Images/Stellar/Dialogue2.gif" alt="">
+    </div>
+  </div>
+</section>
+
+<div id="lightbox" class="lightbox hidden">
+  <span class="close-btn">&times;</span>
+  <img id="lightbox-img" class="lightbox-media" />
+  <video id="lightbox-video" class="lightbox-media" controls></video>
+</div>
+
+
+<footer class="footer" style="margin-top: 100px;">
+  <!-- Social Icons -->
+      <div class="social-icons">
+        <a href="https://github.com/MarcusZ98" target="_blank" rel="noopener noreferrer" class="icon" data-icon="GitHub"><svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>GitHub</title><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></a></a>
+        
+        <a href="https://www.linkedin.com/in/marcus-zibung-0785b12ba" target="_blank" rel="noopener noreferrer" class="icon" data-icon="LinkedIn"><svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="100" height="100" viewBox="0 0 50 50"><path d="M41,4H9C6.24,4,4,6.24,4,9v32c0,2.76,2.24,5,5,5h32c2.76,0,5-2.24,5-5V9C46,6.24,43.76,4,41,4z M17,20v19h-6V20H17z M11,14.47c0-1.4,1.2-2.47,3-2.47s2.93,1.07,3,2.47c0,1.4-1.12,2.53-3,2.53C12.2,17,11,15.87,11,14.47z M39,39h-6c0,0,0-9.26,0-10 c0-2-1-4-3.5-4.04h-0.08C27,24.96,26,27.02,26,29c0,0.91,0,10,0,10h-6V20h6v2.56c0,0,1.93-2.56,5.81-2.56 c3.97,0,7.19,2.73,7.19,8.26V39z"></path></svg></a>
+      </div>
+
+  <ul class="list">
+    <li>
+      <a href="index.html#home">Home</a>
+    </li>
+
+    <li>
+      <a href="index.html#projects">Projects</a>
+    </li>
+
+    <li>
+      <a href="index.html#contact">Contact Me</a>
+    </li>
+
+  </ul>
+
+  <p class="copyright">E-mail: <a href="mailto:marcus.zibung@gmail.com?subject=Portfolio%20Inquiry&body=Hi%20Marcus,">marcus.zibung@gmail.com</a></p>
+
+  <p class="copyright">
+    © Marcus Zibung | All Rights Reserved
+  </p>
+
+</footer>
+
+  <!-- ================================
+       SCRIPTS
+  ================================= -->
+  <script src="script.js"></script>
+  <script src="prism.js"></script>
+
+</body>
+</html>

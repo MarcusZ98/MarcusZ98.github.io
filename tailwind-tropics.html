@@ -1,0 +1,445 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Simple OpenAI Plugin</title>
+
+  <!-- Reuse your main stylesheet -->
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="prism.css">
+  
+</head>
+
+
+<body>
+
+<header class="header">
+
+    <!-- Logo -->
+    <a href="index.html#home" class="logo">
+      Marcus <span>Zibung</span>
+    </a>
+
+    <!-- Mobile Menu Icon -->
+    <i id="menu-icon"><img src="assets/Icons/HamburgerMenu.png" alt="" id="menu-img"></i>
+
+
+    <!-- Navbar Links -->
+    <nav class="navbar">
+      <a href="index.html#home">Home</a>
+      <a href="index.html#projects">Projects</a>
+      <a href="index.html#contact" class="mobile-contact">Contact</a>
+      <a href="index.html#about">About Me</a>
+
+    </nav>
+
+    <!-- Header CTA -->
+    <a href="index.html#contact" class="gradient-btn">Contact Me</a>
+
+  </header>
+
+<section class="home">
+    <div class="home-content">
+      <h1>Tailwind <span>Tropics</span></h1>
+    </div>
+  </section>
+
+<section class="project-details" id="Overview">
+
+    <h3 style="margin-top: 50px;">Project Overview</h3>
+
+    <p>"Tailwind Tropics is a stylized, 3D,  round-based team party game where you collect, construct and combat each other in order to claim the title of “Island Masters”! Scour the tropical islands in search of materials to use in construction of your team's battleship and then duke it out on the open seas! You battle for the sake of battle and play against friends, enemies and frenemies. Tailwind tropics is a true showcase of the long standing feud between the Puckish Pandas and Raccoon Rascals and their crazy competitions."
+        <br><br>This game was developed over 9 weeks as part of my studies at Stockholm University and served as an introduction to multiplayer game development. Through this project, I significantly expanded my knowledge of Unreal Engine 5 while gaining a deeper understanding of the complexities involved in multiplayer implementation. I became familiar with key concepts such as NetMode, Replication, RPCs, Steam integration, and more, which provided valuable insights into the challenges and intricacies of developing multiplayer experiences.
+        <br><br>My contribution to the code mostly lays in everything before the actual game starts. That would be things such as handling the servers, joining/creating sessions, lobby and cosmetic selection.
+    </p>
+
+    <table class="nice-table">
+      <tr>
+        <th>Game Engine</th>
+        <td>Unreal Engine 5.4</td>
+      </tr>
+
+      <tr>
+        <th>Version Control</th>
+        <td>GitHub</td>
+      </tr>
+
+      <tr>
+        <th>IDE</th>
+        <td>JetBrains Rider</td>
+      </tr>
+
+      <tr>
+        <th>Platform</th>
+        <td>Windows</td>
+      </tr>
+
+      <tr>
+        <th>Steam</th>
+        <td><a href="https://store.steampowered.com/app/3424860/Tailwind_Tropics/" target="_blank" rel="noopener noreferrer">Steam Page</a></td>
+      </tr>
+    </table>
+
+    <table class="nice-table" style="margin-top: 20px;">
+      <tr>
+        <th>Development Duration</th>
+        <td>9 weeks</td>
+      </tr>
+
+      <tr>
+        <th>Time of Development</th>
+        <td>Fall 2024</td>
+      </tr>
+
+      <tr>
+        <th>Number of Developers</th>
+        <td>9</td>
+      </tr>
+
+      <tr>
+        <th>My Role</th>
+        <td>Lead Programmer</td>
+      </tr>
+
+    </table>
+
+
+
+    <h3>Trailer</h3>
+
+    <video controls style="margin-top: 20px; border-radius: 10px;" autoplay muted loop playsinline><source src="Assets/Videos/TailwindTropics/Trailer.mp4" type="video/mp4"></video>
+    
+    <h3>Full Playthrough</h3>
+
+    <video controls style="margin-top: 20px; border-radius: 10px;" autoplay muted loop playsinline><source src="Assets/Videos/TailwindTropics/Playthrough.mp4" type="video/mp4"></video>
+
+
+
+  </section>
+
+<section class="project-details" id="MultiplayerAndSteam">
+    <h3 style="margin-top: 50px;">Multiplayer & Steam</h3>
+
+    <p>
+      From the start, we knew we wanted to make a multiplayer game, but multiplayer can be implemented in many different ways, each with its own pros and cons. One of the first big decisions we had to make was which <span class="ui-tag">NetMode</span> to use. For us, it mainly came down to two options:
+    </p>
+
+    <ul>
+        <li>Listen Server</li>
+        <li>Dedicated Servers</li>
+    </ul>
+
+    <p>
+        The main advantage of using a listen server was that it required no server or additional costs. It also made development and testing much easier since we wouldn’t need an external server running to play the game.
+        <br><br>The dedicated server approach would solve one of the biggest drawbacks of a listen server, if the host disconnects or leaves, the entire session is lost. That’s obviously not ideal, especially for a somewhat competitive game like ours. However, we felt that our game leaned more towards a party-game vibe rather than a fully competitive experience, so we were willing to accept this tradeoff.
+        <br><br>Another advantage of dedicated servers is greater control over the session, allowing us to mitigate cheating more effectively since the server wouldn’t be running on a client machine.
+        <br><br>Ultimately, the lack of server upkeep was a major factor in our decision. The benefits of dedicated servers felt more suited to a highly competitive game, which didn’t fully align with our vision.
+        <br><br>That said, we still wanted to keep the door open for dedicated servers in the future, so we’ve made sure to structure our implementation in a way that would make the transition easier if we decide to go down that path. For now, we’ve chosen to go with a listen server approach.
+        <br><br>As for connecting players we wanted to use Steam. We made use of a <a href="https://github.com/mordentral/AdvancedSessionsPlugin" target="_blank" rel="noopener noreferrer">Plugin</a> made by "mordentral" which adds on Steam connectivity to Unreals already existing multiplayer functionality.
+    </p>
+
+    <h4>Creating & Joining Sessions</h4>
+
+    <p>
+        For creating sessions that clients could join, we used the previously mentioned <a href="https://github.com/mordentral/AdvancedSessionsPlugin" target="_blank" rel="noopener noreferrer">Plugin</a>, specifically the <span class="ui-tag">Create Advanced Session</span> node. This gave us control over the maximum number of players in a lobby, allowing us to support both 2v2 and 3v3 matches.
+        <br><br>The <span class="ui-tag">Extra Settings</span> input also allowed us to add a unique ID to each session, as well as the option to set a password. This made private sessions possible and helped us differentiate between sessions when multiple were running at the same time.
+    </p>
+
+    <img src="Assets/Images/TailwindTropics/CreateSessionNode.png" alt="Create Session Node" style="margin-top: 30px; width: 350px;">
+    <p class="media-text">The node used from the plugin to create a session</p>
+
+    <img src="Assets/Images/TailwindTropics/CreateSession.png" alt="Session Creation" style="margin-top: 30px;">
+    <p class="media-text">The interface the player is presented with when creating a session</p>
+
+    <p>
+        When implementing the functionality for joining I first made sure that I could find all available session that I can join and add a widget-entry for each of them. This was first met with a weird issue, we'd find sessions that wasn't really joinable, which of course created further problems. What we found was that due to us using a designated network ID for connecting via Steam we were not the only ones using it, which made us find a bunch of very much unjoinable sessions. The solution for us was to create an unique property string for the sessions that acted as an identifier for our game. When we then went through all of the found sessions we could look for this string and ignore all the ones not having it. 
+        <br><br>When searching for session the player is presented with all available options in a server list. This list will display things such as number of player currently in the session and if it's password protected or not. When pressing "Join" on a password protected session you're prompted to type in a password, which if correct lets you join. Once joined you're then asked to pick a team and once that is done you're part of the squad and ready to play! 
+    </p>
+
+    <img src="Assets/Images/TailwindTropics/FilteringSession.png" alt="Joining Session" style="margin-top: 30px;">
+    <p class="media-text">The code for sifting through the sessions in search for our sessions</p>
+
+    <img src="Assets/Images/TailwindTropics/SessionList.png" alt="Session List" style="margin-top: 30px;">
+    <p class="media-text">The list of the sessions found</p>
+
+    <img src="Assets/Images/TailwindTropics/PasswordPrompt.png" alt="Join Password" style="margin-top: 30px;">
+    <p class="media-text">The password prompt when joining a password protected session</p>
+
+    <h4>LAN implementation</h4>
+
+    <p>
+        To enable LAN we simply had to give the player the option for it in both the creating and joining of sessions, then pass that through to the previously discussed nodes. One of the main differences that this presented was that we had no way of using the Steam functionalities in LAN. This was mainly noticeable with the player names and avatars both in the lobby but also in-game.  Our solution to this was to give the players a random name from a predefined list, and a basic avatar depending on team. This approach allowed us to not only have fun with name choices but also give us control over what's shown compared to allowing the player to pick the name. 
+    </p>
+
+    <img src="Assets/Images/TailwindTropics/Lobby.png" alt="LAN Option" style="margin-top: 30px;">
+    <p class="media-text">The lobby with two players joined over LAN, showing randomly generated names and team avatars</p>
+
+</section>
+
+<section class="project-details" id="Cosmetics">
+    <h3>Cosmetics</h3>
+
+    <h4>Initial Goals</h4>
+    
+    <p>
+        We wanted cosmetics for two main reasons: firstly, as a way for the player to express themselves through the character, and secondly, as a type of unlockable, either through achievements or microtransactions.
+        <br><br>With this in mind I set out a few initial goals for the implementation, those were:
+    </p>
+
+    <ul>
+        <li>You must be able to add as many cosmetics as you want, no limits.</li>
+        <li>Adding a cosmetics must be done in only one place, and it should be intuitive and simple.</li>
+        <li>It needs to be clear feedback to the player when selecting the cosmetic.</li>
+    </ul>
+
+    <h4>Data Tables</h4>
+
+    <p>
+        Data tables seemed to fit my needs quite well, they made it simple to add new entries and also were easy to access and grab data from. So to start of I hade to define what type of variables my cosmetics should contain, with regard to future types as well my entry struct ended up looking like this: 
+    </p>
+
+<div class="code-accordion">
+  <button class="code-accordion-header">
+    <span class="code-accordion-title">Show FCosmeticOption Struct</span>
+    <span class="code-accordion-icon">▾</span>
+  </button>
+
+  <div class="code-accordion-panel">
+    <pre><code class="language-cpp">
+USTRUCT(BlueprintType)
+struct FCosmeticOption : public FTableRowBase
+{
+    GENERATED_BODY()
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Cosmetics")
+    FString Name;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Cosmetics")
+    UTexture2D* Icon;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Cosmetics")
+    UStaticMesh* Mesh;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Cosmetics")
+    UMaterialInterface* Material;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Cosmetics")
+    ECosmeticType Type;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Cosmetics")
+    TArray<ETeams> CompatableTeams;
+
+    FCosmeticOption()
+       : Name(TEXT("Default"))
+       , Icon(nullptr)
+       , Mesh(nullptr)
+       , Material(nullptr)
+       , Type(ECosmeticType::DEFAULT)
+       , CompatableTeams({ ETeams::NONE })
+    {}
+};
+    </code></pre>
+  </div>
+</div>
+
+
+    <p>
+        With this struct I can edit things such as the look and metadata of the cosmetic but also tell what team it's for and what type of cosmetic I'm working with. As for now we're only using hats, but we're considering other options as well, so it felt appropriate to take that into regard. With this as the <span class="ui-tag">Row Type</span> for the data table it ends up looking like this with some of the values filled in for a complete entry: 
+    </p>
+
+    <img src="Assets/Images/TailwindTropics/CosmeticEntry.png" alt="Data Table" style="margin-top: 30px;">
+    <p class="media-text">A complete entry in the data table</p>
+
+    <p>
+        Considering that the "implementor" only has to add an entry to the table and put in the relevant variables I felt like this achieved both of my first tow goals for this implementation! 
+        <br><br>This data table is then read from the widget handling the cosmetic selection and it adds an entry for it. The entry in this case is simply a blueprint for where I can put all the items information and display it for the player, it also acts as button to signal what cosmetic was picked. 
+    </p>
+
+    <img src="Assets/Images/TailwindTropics/CosmeticIcon.png" alt="Cosmetic Widget" style="margin-top: 30px; width: 300px;">
+    <p class="media-text">An empty cosmetic entry</p>
+
+    <p>All these entries are added to the cosmetic selection window and placed in a grid panel, which with some tweaking ensures that they all fit and aligned in the correct way.</p>
+    
+    <img src="Assets/Images/TailwindTropics/CosmeticSelection.png" alt="Cosmetic Selection" style="margin-top: 30px;">
+    <p class="media-text">Cosmetics selection widget with all entries added</p>
+
+    <h4>Scene Capture</h4>
+
+    <p>
+        You might have noticed the cute panda in the picture above, that's my approach of achieving the third goal I set out for: "It needs to be clear feedback to the player when selecting the cosmetic".
+        <br>When selecting an option among the cosmetics it is not only shown directly on the panda in the frame, but also on the panda in the level so that all the other players can see what you're picking.
+        <br>You might notice it in the GIF below, if you look at the panda on the boat in the back as well! 
+    </p>
+
+    <img src="Assets/Images/TailwindTropics/CosmeticGif.gif" alt="Cosmetic Selection GIF" style="margin-top: 30px; width: 500px;">
+    <p class="media-text">Selecting a cosmetic and seeing it applied in real-time</p>
+
+    <p>
+      This was done with the use of a <span class="ui-tag">SceneCaptureComponent2D</span> which I attached to the characters on the boats. I use this component to record the critters and then display that image in the widget, and to make sure only the character is displayed I made a render target and assigned it to the capture component. The only thing left to do was then to put the hat on the actual character and voila! It was display in the selection screen as well! 
+    </p>
+
+    <h4>Final Result</h4>
+
+    <p>
+      The final result of the cosmetic selection felt complete, I've achieved the goals I initially set out for myself and I've also made it adaptable for future changes as well. The whole "selection loop" would look something like this:
+    </p>
+
+    <video controls style="margin-top: 20px; border-radius: 10px;" autoplay muted loop playsinline><source src="Assets/Videos/TailwindTropics/CosmeticDemo.mp4" type="video/mp4"></video>
+    <p class="media-text">Full cosmetic selection process from choosing to seeing it in-game</p>
+        
+</section>
+
+<section class="project-details" id="LeadRole">
+
+    <h3 style="margin-top: 50px;">Lead Role</h3>
+
+    <p>
+      As the lead programmer I had a few additional reasonabilities beyond contributing to the coding of the game. These would be: 
+    </p>
+
+    <ul>
+      <li>Delegating tasks among the programming team.</li>
+      <li>Ensuring good project structure and naming convention.</li>
+      <li>Ensuring that all team members always had something to work on.</li>
+      <li>Ensuring that all team members always had something to work on.</li>
+      <li>Plan accordingly to meet deadlines.</li>
+    </ul>
+
+    <h4>RACI</h4>
+    <p>
+      Early on we made use of a tool, RACI, to ensure that everyone knew which parts of the game they were responsible for. It also helped to not bombard everyone with everything concerning decisions that had to be made for the game. I for example didn't need to be informed about artstyle decisions made as it doesn't really effect me or any programmers work. The RACI table we made looked like this: 
+    </p>
+
+    <img src="Assets/Images/TailwindTropics/RACI.png" alt="RACI Table">
+    <p class="media-text">RACI table for Tailwind Tropics</p>
+
+    <h4>Project structure</h4>
+
+    <p>
+      When the project started we followed a specific style guide to ensure that everyone worked in a similar manor. This style guide was <a href="https://github.com/Allar/ue5-style-guide/tree/v2"  target="_blank" rel="noopener noreferrer">based on one</a> made by another Github user named "Allar" and was of great help for specifically giving good naming conventions for each type of asset. It gave us a table like this to follow when unsure: 
+    </p>
+
+    <table class="nice-table">
+  <tr>
+    <th>Asset Type</th>
+    <th>Prefix</th>
+    <th>Suffix</th>
+  </tr>
+
+  <tr>
+    <td>Blueprint</td>
+    <td>BP_</td>
+    <td></td>
+  </tr>
+
+  <tr>
+    <td>Blueprint Component</td>
+    <td>BP_</td>
+    <td>Component</td>
+  </tr>
+
+  <tr>
+    <td>Widget Blueprint</td>
+    <td>WBP_</td>
+    <td></td>
+  </tr>
+</table>
+
+<p>
+  I made use of this predefined style guide and adjusted it to fit our project. Meaning that I abbreviated relevant information and changed project structure to better fit a smaller project rather, like ours. 
+  <br><br>To keep the project structured throughout our time working on it I conducted code reviews where we among other things looked over naming conventions and file structure.
+</p>
+
+<h4>Trello</h4>
+
+<p>
+  Another tool we used was Trello. We used it for assigning specific task to specific people during a given sprint. Each sprint in our case would be until the next deadline which usually was 1-2 weeks in-between. This was a great way to get an overview of what had to be done, which in turn made it much easier to delegate the tasks according to priority and who was the best fit for it.
+</p>
+
+</section>
+
+<section class="project-details" id="Takeaways">
+
+  <h3>Takeaways</h3>
+  <p>
+    As my first multiplayer game I learned a lot of new concepts and terms, such as: <span class="ui-tag">RPC</span>, <span class="ui-tag">NetMode</span>, <span class="ui-tag">Relevancy</span>, <span class="ui-tag">Net Cull Distance</span>, <span class="ui-tag">Reliable/Unreliable replication</span>, <span class="ui-tag">ownership</span> and <span class="ui-tag">replication</span> in general are just a few among many! Needless to say this project have been a big learning experience for me as I now have a good understanding of these concepts. 
+    <br><br>The multiplayer approach in many ways forced me to get a better understanding of how things actually worked "under the hood" in order to get ensure replication as well as to reduce lag or package loss. Now after the project is done I feel like it gave me much better knowledge about the intricacies of Unreal and I feel a lot more comfortable for projects to come! 
+    <br><br>Our team was a joy to work with and everyone was cooperative and eager to learn/contribute, for this I'm very grateful! We made use of a more structured approach, RACI, this time around concerning individual responsibilities. This tool (or similar) is something I'd like to incorporate in future projects as well, where I work with larger teams. As I believe it helped everyone with staying focused on their part of the game more easily. 
+    <br><br>A takeaway I have for future projects is the importance of having a good understanding of the "needs" of an implementation. I might implement the most awesome pathfinding algorithm ever for an enemy, but if it turns out the enemy can teleport then what's the point? (We have no enemies, dodged a bullet on that one...) To first have a good understanding of something not only reduces the amount of potentially unnecessary work, but it also enables you to better plan ahead for future changes, which is great!
+  </p>
+</section>
+
+<section>
+
+<h3 style="align-items: center; display: flex; justify-content: center; font-size: 4em; margin-bottom: 20px;" >Gallery</h3>
+
+  <div class="gallery">
+    <div class="gallery-item">
+      <img src="Assets/Images/TailwindTropics/Poster.png" alt="">
+    </div>
+    <div class="gallery-item">
+      <img src="Assets/Images/TailwindTropics/CosmeticSelection.png" alt="">
+    </div>
+    <div class="gallery-item">
+      <img src="Assets/Images/TailwindTropics/Lobby.png" alt="">
+    </div>
+    <div class="gallery-item">
+      <img src="Assets/Images/TailwindTropics/Phase1.png" alt="">
+    </div>
+    <div class="gallery-item">
+      <img src="Assets/Images/TailwindTropics/Phase2.png" alt="">
+    </div>
+    <div class="gallery-item">
+      <img src="Assets/Images/TailwindTropics/Phase3.png" alt="">
+    </div>
+
+</section>
+
+<div id="lightbox" class="lightbox hidden">
+  <span class="close-btn">&times;</span>
+  <img id="lightbox-img" class="lightbox-media" />
+  <video id="lightbox-video" class="lightbox-media" controls></video>
+</div>
+
+  <footer class="footer" style="margin-top: 100px;">
+  <!-- Social Icons -->
+      <div class="social-icons">
+        <a href="https://github.com/MarcusZ98" target="_blank" rel="noopener noreferrer" class="icon" data-icon="GitHub"><svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>GitHub</title><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></a></a>
+        
+        <a href="https://www.linkedin.com/in/marcus-zibung-0785b12ba" target="_blank" rel="noopener noreferrer" class="icon" data-icon="LinkedIn"><svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="100" height="100" viewBox="0 0 50 50"><path d="M41,4H9C6.24,4,4,6.24,4,9v32c0,2.76,2.24,5,5,5h32c2.76,0,5-2.24,5-5V9C46,6.24,43.76,4,41,4z M17,20v19h-6V20H17z M11,14.47c0-1.4,1.2-2.47,3-2.47s2.93,1.07,3,2.47c0,1.4-1.12,2.53-3,2.53C12.2,17,11,15.87,11,14.47z M39,39h-6c0,0,0-9.26,0-10 c0-2-1-4-3.5-4.04h-0.08C27,24.96,26,27.02,26,29c0,0.91,0,10,0,10h-6V20h6v2.56c0,0,1.93-2.56,5.81-2.56 c3.97,0,7.19,2.73,7.19,8.26V39z"></path></svg></a>
+      </div>
+
+  <ul class="list">
+    <li>
+      <a href="index.html#home">Home</a>
+    </li>
+
+    <li>
+      <a href="index.html#projects">Projects</a>
+    </li>
+
+    <li>
+      <a href="index.html#contact">Contact Me</a>
+    </li>
+
+  </ul>
+
+  <p class="copyright">E-mail: <a href="mailto:marcus.zibung@gmail.com?subject=Portfolio%20Inquiry&body=Hi%20Marcus,">marcus.zibung@gmail.com</a></p>
+
+  <p class="copyright">
+    © Marcus Zibung | All Rights Reserved
+  </p>
+
+</footer>
+
+  <!-- ================================
+       SCRIPTS
+  ================================= -->
+  <script src="script.js"></script>
+  <script src="prism.js"></script>
+
+
+</body>
+</html>

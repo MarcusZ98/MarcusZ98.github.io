@@ -1,0 +1,480 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Simple OpenAI Plugin</title>
+
+  <!-- Reuse your main stylesheet -->
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="prism.css">
+  
+</head>
+
+
+<body>
+
+  <header class="header">
+
+    <!-- Logo -->
+    <a href="index.html#home" class="logo">
+      Marcus <span>Zibung</span>
+    </a>
+
+    <!-- Mobile Menu Icon -->
+    <i id="menu-icon"><img src="assets/Icons/HamburgerMenu.png" alt="" id="menu-img"></i>
+
+
+    <!-- Navbar Links -->
+    <nav class="navbar">
+      <a href="index.html#home">Home</a>
+      <a href="index.html#projects">Projects</a>
+      <a href="index.html#contact" class="mobile-contact">Contact</a>
+      <a href="index.html#about">About Me</a>
+
+    </nav>
+
+    <!-- Header CTA -->
+    <a href="index.html#contact" class="gradient-btn">Contact Me</a>
+
+  </header>
+
+  <section class="home">
+    <div class="home-content">
+      <h1>Simple <span>OpenAI</span></h1>
+    </div>
+  </section>
+
+  <section class="project-details" id="Overview">
+    <h3>Project Overview</h3>
+
+    <p>“Simple OpenAI” is a plugin I developed for Unreal Engine 5 that integrates the OpenAI API to send and receive prompts during gameplay. I designed it with two goals in mind: simplicity and versatility, so it can fit seamlessly into any project. Working toward those goals was quite fun and made me much more conscious of my design process. 
+        I had to carefully separate the front-end from the back-end and be deliberate about which variables and functions I exposed to Blueprints. 
+        <br><br>I had many ideas for additional features, but I chose to keep the scope focused so the plugin remains lightweight and does its core task well. 
+        <br><br>The plugin is available on FAB, with full setup instructions both there and on my GitHub.
+    </p>
+
+    <table class="nice-table">
+      <tr>
+        <th>Game Engine</th>
+        <td>Unreal Engine 5.5</td>
+      </tr>
+
+      <tr>
+        <th>Version Control</th>
+        <td>GitHub</td>
+      </tr>
+
+      <tr>
+        <th>IDE</th>
+        <td>JetBrains Rider</td>
+      </tr>
+
+      <tr>
+        <th>Platform</th>
+        <td>Windows</td>
+      </tr>
+
+      <tr>
+        <th>FAB</th>
+        <td><a href="https://www.fab.com/listings/05264f06-54c5-403c-8cc5-c31e9f26dd32" target="_blank" rel="noopener noreferrer">FAB Page</a></td>
+      </tr>
+
+      <tr>
+        <th>GitHub</th>
+        <td><a href="https://github.com/MarcusZ98/Simple-OpenAI" target="_blank" rel="noopener noreferrer">GitHub Repo</a></td>
+      </tr>
+    </table>
+
+    <table class="nice-table" style="margin-top: 20px;">
+      <tr>
+        <th>Development Duration</th>
+        <td>2 weeks</td>
+      </tr>
+
+      <tr>
+        <th>Time of Development</th>
+        <td>Summer 2025</td>
+      </tr>
+
+      <tr>
+        <th>Number of Developers</th>
+        <td>Solo Developer</td>
+      </tr>
+
+    </table>
+
+    <h3 style="margin-top: 50px;">Example</h3>
+
+    <video controls style="margin-top: 20px; border-radius: 10px;" autoplay muted loop playsinline>
+      <source src="Assets/Videos/SimpleOpenAI/BanterExample.mp4" type="video/mp4">
+    </video>
+
+    <p>
+      In this example, I’m showcasing one possible use case of the plugin using one of my older projects. Each team is assigned a behavior prompt that matches their character, and they’re then asked to throw back a snappy comment at the opposing team.
+      <br>This demo also highlights that:
+    </p>
+
+    <ul style="margin-left: 4em; font-size: 0.7em; margin-top: 1em; margin-bottom: 1em; width: 100%;">
+      <li>The plugin works seamlessly in a multiplayer setting.</li>
+      <li>Choose a default model (e.g., <span class="ui-tag">gpt-3.5-turbo</span> or <span class="ui-tag">gpt-4</span>).</li>
+    </ul>
+
+  </section>
+
+  <section class="project-details" id="AsynchronousTask">
+    <h3 style="margin-top: 50px;">Asynchronous Task</h3>
+
+    <p>
+      One challenge with working against an API is that responses are never instant, you can’t call a node and immediately expect a result. Because of this, I chose (like many others) to implement asynchronous task. This approach lets the user continue execution and then handle the response cleanly once it arrives. In the end, my node exposed two additional execution outputs to cover both possible scenarios: success and failure.
+    </p>
+
+    <img src="Assets/Images/SimpleOpenAI/Node1.png" alt="Simple OpenAI Node" style="width: 500px;">
+    <p class="media-text" style="margin-top: -50px;">The main async node exposed to Blueprints</p>
+
+    <p>
+    This was made possible by using Unreal’s dynamic multicast delegates, which I called in code depending on the outcome of the request.  
+    </p>
+
+    <!-- Delegates accordion (already had) -->
+    <div class="code-accordion">
+      <button class="code-accordion-header">
+        <span class="code-accordion-title">Show C++ Delegate Declarations</span>
+        <span class="code-accordion-icon">▾</span>
+      </button>
+
+      <div class="code-accordion-panel">
+        <pre><code class="language-cpp">
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FGPTResponseReceived, 
+    const FString&, 
+    ResponseText);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FGPTResponseFailed);
+
+UPROPERTY(BlueprintAssignable)
+FGPTResponseReceived OnSuccess;
+
+UPROPERTY(BlueprintAssignable)
+FGPTResponseFailed OnFailure;
+        </code></pre>
+      </div>
+    </div>
+
+    <h4>Implementing the Async Node</h4>
+
+    <p>
+      To achieve this, I extended <span class="ui-tag">UBlueprintAsyncActionBase</span>, which is the standard way to expose asynchronous tasks to Blueprints. Internally, the class creates a transient <span class="ui-tag">UObject</span> (<span class="ui-tag">UGPTRequestAsyncAction</span>) bound to the calling <span class="ui-tag">UWorld</span> or <span class="ui-tag">GameInstance</span>, ensuring proper lifetime management:
+    </p>
+
+    <!-- CreateAction accordion -->
+    <div class="code-accordion">
+      <button class="code-accordion-header">
+        <span class="code-accordion-title">Show CreateAction Async Node Code</span>
+        <span class="code-accordion-icon">▾</span>
+      </button>
+
+      <div class="code-accordion-panel">
+        <pre><code class="language-cpp">
+UGPTRequestAsyncAction* UGPTRequestAsyncAction::CreateAction(
+    UObject* WorldContextObject, 
+    UGPTMessageList* Ml, 
+    FString Model)
+{
+    UGameInstance* GameInstance = nullptr;
+
+    if (WorldContextObject)
+    {
+        if (UWorld* World = WorldContextObject->GetWorld())
+        {
+            GameInstance = World->GetGameInstance();
+        }
+    }
+
+    UGPTRequestAsyncAction* Action = NewObject<UGPTRequestAsyncAction>(
+        GameInstance ? GameInstance : (UObject*)GetTransientPackage());
+
+    Action->MessageList = Ml;
+    Action->Model = Model;
+    return Action;
+}
+        </code></pre>
+      </div>
+    </div>
+
+    <p>
+      When activated, the task builds a JSON payload from a <span class="ui-tag">UGPTMessageList</span> (a helper class that serializes role/content pairs into the format OpenAI expects) and dispatches the request via Unreal’s <span class="ui-tag">FHttpModule</span>. The HTTP request runs off the game thread, and the response is passed back into the async action through a bound callback (HandleResponse).
+    </p>
+
+  </section>
+
+  <section class="project-details" id="OpenAIAPI">
+
+    <h3 style="margin-top: 50px;">OpenAI's API</h3>
+
+    <p>
+      The OpenAI API requires requests in a structured JSON format, with each entry containing a role (system, user, or assistant) and the corresponding content. To keep this clean, I built a helper <span class="ui-tag">UObject</span>, <span class="ui-tag">UGPTMessageList</span>, which serializes messages into the correct format.
+    </p>
+
+    <!-- AddMessage accordion -->
+    <div class="code-accordion">
+      <button class="code-accordion-header">
+        <span class="code-accordion-title">Show UGPTMessageList::AddMessage()</span>
+        <span class="code-accordion-icon">▾</span>
+      </button>
+
+      <div class="code-accordion-panel">
+        <pre><code class="language-cpp">
+void UGPTMessageList::AddMessage(const FString& Role, const FString& Content)
+{
+    TSharedPtr&lt;FJsonObject&gt; NewMessage = MakeShareable(new FJsonObject);
+    NewMessage->SetStringField(TEXT("role"), Role);
+    NewMessage->SetStringField(TEXT("content"), Content);
+    Messages.Add(MakeShareable(new FJsonValueObject(NewMessage)));
+}
+        </code></pre>
+      </div>
+    </div>
+
+    <p>
+      This abstraction means the rest of the code never needs to manually construct JSON fields for role/content pairs. You just call <span class="ui-tag">AddMessage("user", "Hello!")</span> or <span class="ui-tag">AddMessage("system", "You are a helpful assistant")</span>. The <span class="ui-tag">UGPTMessageList</span> then provides the correctly formatted <span class="ui-tag">TArray&lt;TSharedPtr&lt;FJsonValue&gt;&gt;</span> to insert directly into the request payload:
+    </p>
+
+    <!-- Request payload accordion -->
+    <div class="code-accordion">
+      <button class="code-accordion-header">
+        <span class="code-accordion-title">Show Request Payload Construction</span>
+        <span class="code-accordion-icon">▾</span>
+      </button>
+
+      <div class="code-accordion-panel">
+        <pre><code class="language-cpp">
+if (IsValid(MessageList) && !MessageList->GetMessages().IsEmpty())
+{
+    Json->SetArrayField(TEXT("messages"), MessageList->GetMessages());
+}
+        </code></pre>
+      </div>
+    </div>
+
+    <p>
+      The end result is a clean and flexible way to build conversations while maintaining OpenAI’s expected schema.
+    </p>
+
+    <h3 style="margin-top: 50px;">Handling the Response</h3>
+      <p>
+        In the callback, I deserialize the JSON using <span class="ui-tag">FJsonSerializer</span>, extract the assistant’s reply, and then broadcast it back to Blueprint via the multicast delegate. This design avoids blocking the game thread, and ensures the result can be consumed directly in Blueprints through clean <span class="ui-tag">OnSuccess</span> and <span class="ui-tag">OnFailure</span> execution outputs:
+      </p>
+    
+    <!-- Response handling accordion -->
+    <div class="code-accordion">
+      <button class="code-accordion-header">
+        <span class="code-accordion-title">Show Response Handling Code</span>
+        <span class="code-accordion-icon">▾</span>
+      </button>
+
+      <div class="code-accordion-panel">
+        <pre><code class="language-cpp">
+FString JsonStr = Response->GetContentAsString();
+
+TSharedPtr&lt;FJsonObject&gt; Json;
+TSharedRef&lt;TJsonReader&lt;&gt;&gt; Reader = TJsonReaderFactory&lt;&gt;::Create(JsonStr);
+if (FJsonSerializer::Deserialize(Reader, Json) && Json.IsValid())
+{
+    const TArray&lt;TSharedPtr&lt;FJsonValue&gt;&gt;* Choices;
+    if (Json->TryGetArrayField(TEXT("choices"), Choices) && Choices->Num() > 0)
+    {
+        TSharedPtr&lt;FJsonObject&gt; First = (*Choices)[0]->AsObject();
+        if (First.IsValid())
+        {
+            TSharedPtr&lt;FJsonObject&gt; MessageObj = First->GetObjectField(TEXT("message"));
+            if (MessageObj.IsValid())
+            {
+                FString Reply = MessageObj->GetStringField(TEXT("content"));
+                OnSuccess.Broadcast(Reply);
+                UE_LOG(LogSimpleOpenAI, VeryVerbose, TEXT("[SimpleOpenAI] Received reply: %s"), *Reply);
+                return;
+            }
+        }
+    }
+}
+        </code></pre>
+      </div>
+    </div>
+
+    <p>
+      An additional benefit of this approach is decoupling: the networking layer (request/response handling) is fully separated from the Blueprint interface. The Blueprint developer only sees a high-level async node with clear success/failure flows, while the underlying complexity of HTTP setup, JSON parsing and error handling is entirely encapsulated.
+    </p>
+
+  </section>
+
+  <section class="project-details" id="AuthenticationAndDebugging">
+
+
+    <h3 style="margin-top: 50px;">Authentication and Debugging</h3>
+
+    <p>
+      Authentication is handled via a Bearer token passed in the Authorization header. Instead of exposing the key in Blueprints or hardcoding it in source, the plugin integrates with Unreal’s Project Settings system through <span class="ui-tag">USimpleOpenAISettings</span>.
+      <br><br>Developers enter their API key once in the editor under <span class="ui-tag">Project Settings</span> → <span class="ui-tag">Plugins</span> → <span class="ui-tag">Simple OpenAI</span>, and it is automatically retrieved at runtime:
+    </p>
+
+    <!-- API key retrieval accordion -->
+    <div class="code-accordion">
+      <button class="code-accordion-header">
+        <span class="code-accordion-title">Show API Key Retrieval Code</span>
+        <span class="code-accordion-icon">▾</span>
+      </button>
+
+      <div class="code-accordion-panel">
+        <pre><code class="language-cpp">
+const USimpleOpenAISettings* Settings = GetDefault&lt;USimpleOpenAISettings&gt;();
+const FString& ApiKey = Settings->ApiKey;     
+
+if (ApiKey.IsEmpty())
+{
+    UE_LOG(LogSimpleOpenAI, Warning, TEXT("[SimpleOpenAI] API key not set in project settings!"));
+    OnFailure.Broadcast();
+    return;
+}
+
+Request->SetHeader("Authorization", FString::Printf(TEXT("Bearer %s"), *ApiKey));
+        </code></pre>
+      </div>
+    </div>
+
+    <p>
+      To further support debugging, <span class="ui-tag">USimpleOpenAISettings</span> also implements a <span class="ui-tag">TestApiKey()</span> function, which issues a request against the /v1/models endpoint. This allows developers to verify their key is valid directly from the settings panel, without having to run a full Blueprint flow:
+    </p>
+
+    <!-- TestApiKey accordion -->
+    <div class="code-accordion">
+      <button class="code-accordion-header">
+        <span class="code-accordion-title">Show TestApiKey() Implementation</span>
+        <span class="code-accordion-icon">▾</span>
+      </button>
+
+      <div class="code-accordion-panel">
+        <pre><code class="language-cpp">
+void USimpleOpenAISettings::TestApiKey() const
+{
+    UE_LOG(LogSimpleOpenAI, Log, TEXT("[SimpleOpenAI] Testing API key..."));
+    
+    FHttpModule& Http = FHttpModule::Get();
+    TSharedRef&lt;IHttpRequest, ESPMode::ThreadSafe&gt; Request = Http.CreateRequest();
+    
+    Request->SetURL(TEXT("https://api.openai.com/v1/models"));
+    Request->SetVerb("GET");
+    Request->SetHeader("Authorization", FString::Printf(TEXT("Bearer %s"), *ApiKey));
+
+    Request->OnProcessRequestComplete().BindLambda([](FHttpRequestPtr Req, FHttpResponsePtr Resp, bool bSuccess)
+    {
+        if (!bSuccess || !Resp.IsValid())
+        {
+            UE_LOG(LogSimpleOpenAI, Warning, TEXT("[SimpleOpenAI] Test API request failed."));
+            return;
+        }
+
+        if (Resp->GetResponseCode() == 200)
+        {
+            UE_LOG(LogSimpleOpenAI, Display, TEXT("[SimpleOpenAI] API Test Success"));
+        }
+        else
+        {
+            UE_LOG(LogSimpleOpenAI, Warning, TEXT("[SimpleOpenAI] API Test failed with code %d: %s"),
+                Resp->GetResponseCode(), *Resp->GetContentAsString());
+        }
+    });
+
+    Request->ProcessRequest();
+}
+        </code></pre>
+      </div>
+    </div>
+
+    <p>
+      The check against <span class="ui-tag">Resp->GetResponseCode() == 200</span> is verifying that the server returned a standard HTTP 200 OK response, meaning the request was successful and the API key is valid. Other codes (e.g., 401 Unauthorized, 429 Too Many Requests, or 500-level server errors) indicate different failure scenarios and are logged accordingly for debugging.
+      <br><br>Through <span class="ui-tag">FSimpleOpenAISettingsCustomization</span>, this test can even be triggered with a single button press in the editor, making it easy to validate the integration without touching code or Blueprints.
+    </p>
+
+  </section>
+
+  <section class="project-details" id="GPTChatComponent">
+
+    <h3 style="margin-top: 50px;">GPTChatComponent</h3>
+
+    <p>
+      Beyond simple message handling, the <span class="ui-tag">UGPTChatComponent</span> allows developers to attach persistent behavior to any Actor in the world. By enabling dialogue history (<span class="ui-tag">bSaveDialogueHistory</span>) and defining a Behavior Prompt, each Actor can maintain its own unique conversational context. This design means that an NPC can be given a personality, memory, and role-specific instructions without requiring additional state management in Blueprints.
+      <br><br>From the user’s point of view, this results in a minimal setup workflow:
+    </p>
+
+    <ol style="margin-left: 4em; font-size: 0.7em; margin-top: 1em; margin-bottom: 1em; width: 100%;">
+      <li>Paste the API key once into Project Settings.</li>
+      <li>Add the GPT Chat Component to an Actor.</li>
+      <li>Call SendMessage in blueprint and react to ResponseRecived by adding the event.</li>
+    </ol>
+
+  </section>
+
+  <section class="project-details" id="EaseOfUse">
+  
+    <h3 style="margin-top: 50px;">Ease of Use</h3>
+
+    <p>
+      An important piece of usability is the plugin’s dedicated Project Settings panel. Developers configure everything in one place under <span class="ui-tag">Project Settings</span> → <span class="ui-tag">Plugins</span> → <span class="ui-tag">Simple OpenAI</span>. Here they can:
+    </p>
+
+    <ul style="margin-left: 4em; font-size: 0.7em; margin-top: 1em; margin-bottom: 1em; width: 100%;">
+      <li>Paste in their API key once.</li>
+      <li>Choose a default model (e.g., <span class="ui-tag">gpt-3.5-turbo</span> or <span class="ui-tag">gpt-4</span>).</li>
+      <li>Optionally enable custom model names if they want to override the defaults.</li>
+      <li>Run an inline API key test, which issues a request against OpenAI’s /v1/models endpoint to confirm the key is valid.</li>
+      <li>Submit feedback/bug reports directly via a shortcut button.</li>
+    </ul>
+
+    <p>
+      This integration means developers no longer need to hardcode credentials or manage them in Blueprints. Once configured, every async task automatically pulls the key and model settings at runtime.
+    </p>
+
+  </section>
+
+  <footer class="footer" style="margin-top: 100px;">
+  <!-- Social Icons -->
+      <div class="social-icons">
+        <a href="https://github.com/MarcusZ98" target="_blank" rel="noopener noreferrer" class="icon" data-icon="GitHub"><svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>GitHub</title><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></a></a>
+        
+        <a href="https://www.linkedin.com/in/marcus-zibung-0785b12ba" target="_blank" rel="noopener noreferrer" class="icon" data-icon="LinkedIn"><svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="100" height="100" viewBox="0 0 50 50"><path d="M41,4H9C6.24,4,4,6.24,4,9v32c0,2.76,2.24,5,5,5h32c2.76,0,5-2.24,5-5V9C46,6.24,43.76,4,41,4z M17,20v19h-6V20H17z M11,14.47c0-1.4,1.2-2.47,3-2.47s2.93,1.07,3,2.47c0,1.4-1.12,2.53-3,2.53C12.2,17,11,15.87,11,14.47z M39,39h-6c0,0,0-9.26,0-10 c0-2-1-4-3.5-4.04h-0.08C27,24.96,26,27.02,26,29c0,0.91,0,10,0,10h-6V20h6v2.56c0,0,1.93-2.56,5.81-2.56 c3.97,0,7.19,2.73,7.19,8.26V39z"></path></svg></a>
+      </div>
+
+  <ul class="list">
+    <li>
+      <a href="index.html#home">Home</a>
+    </li>
+
+    <li>
+      <a href="index.html#projects">Projects</a>
+    </li>
+
+    <li>
+      <a href="index.html#contact">Contact Me</a>
+    </li>
+
+  </ul>
+
+  <p class="copyright">E-mail: <a href="mailto:marcus.zibung@gmail.com?subject=Portfolio%20Inquiry&body=Hi%20Marcus,">marcus.zibung@gmail.com</a></p>
+
+  <p class="copyright">
+    © Marcus Zibung | All Rights Reserved
+  </p>
+
+</footer>
+
+  <!-- ================================
+       SCRIPTS
+  ================================= -->
+  <script src="script.js"></script>
+  <script src="prism.js"></script>
+
+
+
+</body>
+</html>

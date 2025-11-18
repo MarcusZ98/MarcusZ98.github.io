@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Simple OpenAI Plugin</title>
+
+  <!-- Reuse your main stylesheet -->
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="prism.css">
+  
+</head>
+
+<body>
+<header class="header">
+
+    <!-- Logo -->
+    <a href="index.html#home" class="logo">
+      Marcus <span>Zibung</span>
+    </a>
+
+    <!-- Mobile Menu Icon -->
+    <i id="menu-icon"><img src="assets/Icons/HamburgerMenu.png" alt="" id="menu-img"></i>
+
+
+    <!-- Navbar Links -->
+    <nav class="navbar">
+      <a href="index.html#home">Home</a>
+      <a href="index.html#projects">Projects</a>
+      <a href="index.html#contact" class="mobile-contact">Contact</a>
+      <a href="index.html#about">About Me</a>
+
+    </nav>
+
+    <!-- Header CTA -->
+    <a href="index.html#contact" class="gradient-btn">Contact Me</a>
+
+</header>
+
+<section class="home">
+    <div class="home-content">
+      <h1>Not A <span>Murder</span></h1>
+    </div>
+  </section>
+
+<section class="project-details" id="Overview">
+
+    <h3>Project Overview</h3>
+
+    <p>
+        This is a project I've worked on over the summer with two other students to learn and get better at Unreal and C++ in general. It's a rail-shooter game where you play as a crow, hence the fitting title. The team working on the project consisted of one Game designer and two programmers, me included.
+    </p>
+
+    <table class="nice-table">
+      <tr>
+        <th>Game Engine</th>
+        <td>Unreal Engine 5.4
+        </td>
+      </tr>
+
+      <tr>
+        <th>Version Control</th>
+        <td>GitHub</td>
+      </tr>
+
+      <tr>
+        <th>IDE</th>
+        <td>JetBrains Rider</td>
+      </tr>
+
+      <tr>
+        <th>Platform</th>
+        <td>Windows</td>
+      </tr>
+
+      <tr>
+        <th>GitHub</th>
+        <td><a href="https://github.com/MarcusZ98/NotAMurder" target="_blank" rel="noopener noreferrer">GitHub Repository</a></td>
+      </tr>
+    </table>
+
+        <table class="nice-table" style="margin-top: 20px;">
+      <tr>
+        <th>Development Duration</th>
+        <td>8 weeks</td>
+      </tr>
+
+      <tr>
+        <th>Time of Development</th>
+        <td>Summer 2024</td>
+      </tr>
+
+      <tr>
+        <th>Number of Developers</th>
+        <td>3</td>
+      </tr>
+
+      <tr>
+        <th>My Role</th>
+        <td>Programmer</td>
+      </tr>
+
+    </table>
+
+        <h3>Full Playthrough</h3>
+
+    <video controls style="margin-top: 20px; border-radius: 10px;" autoplay muted loop playsinline><source src="Assets/Videos/NaM/Not A Murder - Full Level Playthrough.mp4" type="video/mp4"></video>    
+</section>
+
+<section class="project-details" id="Splines">
+    <p>I’m going to start off with splines, they are probably the main component of our game and is the part that dictates the movement of not only the player but the enemies as well.</p>
+
+    <h4>The Player</h4>
+    <p>For the player it felt like a given to have it constrained to a spline considering we intended it to follow a specified path in the level. Although attaching the player to spline directly wouldn’t allow much movement, we instead made a “root actor” that acted like a middle man. This root allowed the “2D plane” with the movement constraints to follow the spline path instead and enabled the player to move inside those constraints. All we had to do now was attach a camera with a spring arm for smooth camera-movement to the root and ta-da, we had a moving player!</p>
+
+    <h4>The Enemies</h4>
+    <p>When it came to the enemies we decided to have them attached to a spline for mainly one reason, customizability. It meant we could place it however we wanted it to and have greater overall control over the player experience.
+    <br><br>Because I already had the spline movement implemented in the player's spline I decided to have the enemies make use of the same spline just with an enum switch on the character type to separate some functionalities. As an afterthought I think it would’ve been wiser to split up the actor into two different ones, just to keep it simple in the end. 
+    <br><br>I already had an interface for the speed part of the spline, so I could just attach an enemy to the spline directly and let it fly along. Seems simple, but what about groups of enemies? It quickly became apparent that it would become a real headache to put together enemy groups with separate splines, and game performance could really become an issue in the end as well. 
+    <br><br>The goal then became to allow the spline to carry groups of enemies. I decided to make use of the constructionScript of the spline to allow a visual representation of the groups while you worked on them. I made editable variables such as <span class="ui-tag">GroupSize</span> and <span class="ui-tag">DistanceBetweenEnemies</span> which in turn spawned in basic shapes to represent the transforms at which the actual enemies would spawn at during play. These shapes would spawn in a square-plane shape and the Game designer could then freely move them around in the editor to change the shape of the group. I later also added the functionality of saving/loading the enemy positions to make it easier to edit positions and later revert, or just as a failsafe.</p>
+
+    <video controls style="margin-top: 20px; border-radius: 10px;" autoplay muted loop playsinline><source src="Assets/Videos/NaM/Splinesdemo.mkv" type="video/mp4"></video>
+    <p class="media-text">A demonstration of the spline system in action, showing how groups of enemies are managed and moved along the spline path.</p>
+
+    <h4>Outcome</h4>
+    <p>In the end I ended up with a great deal of customizability on my spline. Not only those variables I mentioned before but I also allowed the Game designer to override the data of the entity being attached for it to allow even more flexibility in the future. Here’s the end result of all the editable properties with a bunch of metadata to make it easier to use: Link to code</p>
+</section>
+
+<section class="project-details" id="Enemies & Weapons">
+
+    <h3>Enemies & Weapons</h3>
+
+    <p>What’s the goal of enemies in our game? I had a few key objectives in mind:</p>
+    <ul>
+        <li>They act like a moving target.</li>
+        <li>Give points when shot at.</li>
+        <li>Can hurt the player.</li>
+    </ul>
+
+    <p>All seems quite simple enough, the moving part is mainly done using the spline discussed before and to give them more lifelike behavior I’ve also added a bit of randomness to the animations as well allowing the enemies to face the player at all times.</p>
+
+    <img src="Assets/Images/NaM/gal1.gif">
+    <p class="media-text">The enemies in a grid layout</p>
+
+    <p>The enemies give points when shot at as well as points upon dying, I’ll get more in depth how that works later on during “Game Framework” but from the enemy’s perspective it’s just sending away the points via an event dispatcher.
+    <br><br>It does give me an opportunity to show the class hierarchy of enemies which is quite simple but it allows me to very easily add new enemies as well as change the behaviour of things without having to do so over multiple classes. Here’s a very simplified overview of the hierarchy where I’ve not included things such as structs, interfaces and functions. It’s just to give an idea of my overall structure of things:</p>
+
+    <img src="Assets/Images/NaM/UML.png">
+    <p class="media-text">Simplified diagram of the enemy class hierarchy</p>
+
+    <p>When it came to hurting the player I made use of Unreals built in tool apply/take damage, this came in handy for triggering subsequent events. I created a weapon class that could be used by both the player and the enemies, once again to allow greater flexibility later down the road if we want to swap things around and change out weapons more easily. Each weapon held a struct with a bunch of variables that you could change, such as <span class="ui-tag">DamagePerShot</span>, <span class="ui-tag">FireRate</span>, <span class="ui-tag">ProjectileSpeed</span> and what type of projectile to use. The projectiles was a different class I created to also allow flexibility. This class mainly contained information about the look of the projectile and impact but also held the logic for impacting with the player, enemies and terrain.
+    <br><br>Both of these classes were made as a base class that I could inherit from to create more weapons and projectiles later on.</p>
+
+    <video controls style="margin-top: 20px; border-radius: 10px;" autoplay muted loop playsinline><source src="Assets/Videos/NaM/Crow_Shooting.mp4" type="video/mp4"></video>
+    <p class="media-text">A demonstration of the enemy and weapon systems in action, showcasing how enemies react to being shot and how the player's weapon functions.</p>
+
+</section>
+
+<section class="project-details" id="Widgets">
+
+    <h3>Widgets</h3>
+
+    <p>When I started creating the widgets I found it quite simple to just drag & drop and create events for each button. Once I started making larger menus with settings and so on I realised that it easily gets quite complex. And once the menus were in place I realised that we need controller support, also not an easy task when the widget isn’t as simple as one vertical box. 
+    <br><br>I wanted custom functionality for my buttons to allow animations and focus events, so I made my own button widget. I exposed variables such as the text and text colour to make the buttons slightly customizable from the widget making use of them. I also made animations for it when hovered/unhovered as well as when focused and on lost focus.
+    <br><br>A custom On Clicked event dispatcher allowed me to know what button was pressed which simplified the use of the widget when implementing the click functionalities. It made it work just like Unreals "default" button, which was great! 
+    <br><br>To allow controller support I override <span class="ui-tag">OnFocusReceived</span> on my button to allow an event dispatcher informing the menu which button is currently being focused. In the menu I then override the <span class="ui-tag">OnKeyDown</span> to allow desired button inputs to run the <span class="ui-tag">HandleButtonClick</span> with the <span class="ui-tag">CurrentlyFocusedButton</span>. This approach allows me to add controller support without really interfering with the normal mouse support at all, which is a great plus.
+    <br><br>All this goes mainly for my main menu, pause menu  as well as the summary screen which all contain quite a lot of buttons and functionality. How I grab all of the data for my widgets, such as <span class="ui-tag"></span>Enemies Killed</span> will be explained below in Game Framework.</p>
+
+    <video controls style="margin-top: 20px; border-radius: 10px;" autoplay muted loop playsinline><source src="Assets/Videos/NaM/NAM_MainMenu.mp4" type="video/mp4"></video>
+    <p class="media-text">A demonstration of the custom button widget in action, showcasing its animations and controller support within the main menu.</p>
+
+    <video controls style="margin-top: 20px; border-radius: 10px;" autoplay muted loop playsinline><source src="Assets/Videos/NaM/NAM_PauseMenu.mp4" type="video/mp4"></video>
+    <p class="media-text">A demonstration of the pause menu, highlighting the use of the custom button widget and its controller support.</p>
+
+</section>
+
+<section class="project-details" id="GameFramework">
+
+    <h3>Game Framework</h3>
+    <p>This project taught me a lot about game framework and I feel like it really helped me get a good understanding of the whole game structure as a result. 
+    <br><br>I’ll start off by explaining my Game Instance class which I mainly used to handle the save/load functionality as well as store a few variables. I found this was a great place to house my logic for SaveGame as it’s a persistent class and is globally accessible. As for the save functionality, our game really didn’t need different save slots, it just needed to store the highest score and rank earned for each level. I made a very simple SaveGame class to store my data, and it looks like this:</p>
+
+    <div class="code-accordion">
+      <button class="code-accordion-header">
+        <span class="code-accordion-title">ADD NEW CODE</span>
+        <span class="code-accordion-icon">▾</span>
+      </button>
+
+      <div class="code-accordion-panel">
+        <pre><code class="language-cpp">
+ADD NEW CODE
+        </code></pre>
+      </div>
+    </div>
+
+    <p>And then to save and load the data from the Game Instance with just a function call I made these functions:
+    </p>
+
+        <div class="code-accordion">
+      <button class="code-accordion-header">
+        <span class="code-accordion-title">ADD NEW CODE</span>
+        <span class="code-accordion-icon">▾</span>
+      </button>
+
+      <div class="code-accordion-panel">
+        <pre><code class="language-cpp">
+ADD NEW CODE
+        </code></pre>
+      </div>
+    </div>
+
+    <p>This allowed me to easily grab data as well as save whenever needed. With the SaveGame class I made I could also very easily add more variables to save in future if needed. 
+    <br><br>As for the Game State class I decided to keep all of my stats in this class, the reason for it is mainly because it’s not persistent between levels and variables such as number of enemies changes depending on level. The stats I kept track off were:</p>
+
+    <ul>
+        <li>TotalNumberOfEnemies</li>
+        <li>NumberOfEnemiesKilled</li>
+        <li>TotalScore</li>
+        <li>MaximumScore</li>
+        <li>PercentageOfScoreEarned</li>
+        <li>NumberOfTimesHit</li>
+        <li>TotalDeductedScore</li>
+        <li>StarRank</li>
+    </ul>
+
+    <p>In BeginPlay for each enemy they called an event in the Game State to register themself, this event took the points they were worth and added it together to get the <span class="ui-tag">MaximumScore</span> variable setup and ready. The registration also binded the events for <span class="ui-tag">OnEnemyKilled</span> and <span class="ui-tag">OnEnemyHit</span> to use during runtime to add score to the <span class="ui-tag">TotalScore</span>. I chose this approach instead of <span class="ui-tag">FindAllActorsOfClass()</span> partly because of performance reasons but also because it allowed me to have better control over the gameflow. With my approach I can spawn in more enemies during runtime and have them count toward the stats instead of relying on everything spawning in at start.
+    <br><br>The player did the same and registered itself in the Game State at <span class="ui-tag">BeginPlay</span> to bind the event <span class="ui-tag">OnPlayerHit</span>, this allowed me to keep track of variables such as <span class="ui-tag">TotalDeductedScore</span> and <span class="ui-tag">NumberOfTimesHit</span>. 
+    <br><br>To display these stats during runtime via things like the score tracker or the game summary screen the Game State class made calls to events in the <span class="ui-tag">Player HUD</span> class which handled the interaction with the separate Widget elements. This decision was mainly made to decouple the code a bit more.</p>
+
+</section>  
+
+<section class="project-details" id="Takeaways">
+
+    <h3>Takeaways</h3>
+    <p>This project served as a great way to keep experimenting with different tools in Unreal Engine and get more familiar with it. During this project I tried to convert most of my code to C++ which taught me a lot about not only C++ but also how to make it function together with Unreals visual scripting. 
+    <br><br>As we were a very small team I worked very close with both of my teammates. It opened up a new way of thinking for me when I only had to design the tools for the game designer to then use when creating the levels. It made me focus much more on ease of use and configurability than previous projects where I hadn't "handed over" my code in the same way.  For the future when working in larger teams I believe that's important skills to carry over as it not only helps the people making use of the code but also other programmers trying to understand it. </p>
+
+</section>
+
+<section id="Gallery">
+
+<h3 style="align-items: center; display: flex; justify-content: center; font-size: 4em; margin-bottom: 20px;" >Gallery</h3>
+
+  <div class="gallery">
+    <div class="gallery-item">
+      <img src="Assets/Images/NaM/gal1.gif" alt="">
+    </div>
+    <div class="gallery-item">
+      <img src="Assets/Images/NaM/gal2.gif" alt="">
+    </div>
+    <div class="gallery-item">
+      <img src="Assets/Images/NaM/gal3.png" alt="">
+    </div>
+    <div class="gallery-item">
+      <img src="Assets/Images/NaM/gal4.png" alt="">
+    </div>
+  </div>
+</section>
+
+<div id="lightbox" class="lightbox hidden">
+  <span class="close-btn">&times;</span>
+  <img id="lightbox-img" class="lightbox-media" />
+  <video id="lightbox-video" class="lightbox-media" controls></video>
+</div>
+
+<footer class="footer" style="margin-top: 100px;">
+  <!-- Social Icons -->
+      <div class="social-icons">
+        <a href="https://github.com/MarcusZ98" target="_blank" rel="noopener noreferrer" class="icon" data-icon="GitHub"><svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>GitHub</title><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></a></a>
+        
+        <a href="https://www.linkedin.com/in/marcus-zibung-0785b12ba" target="_blank" rel="noopener noreferrer" class="icon" data-icon="LinkedIn"><svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="100" height="100" viewBox="0 0 50 50"><path d="M41,4H9C6.24,4,4,6.24,4,9v32c0,2.76,2.24,5,5,5h32c2.76,0,5-2.24,5-5V9C46,6.24,43.76,4,41,4z M17,20v19h-6V20H17z M11,14.47c0-1.4,1.2-2.47,3-2.47s2.93,1.07,3,2.47c0,1.4-1.12,2.53-3,2.53C12.2,17,11,15.87,11,14.47z M39,39h-6c0,0,0-9.26,0-10 c0-2-1-4-3.5-4.04h-0.08C27,24.96,26,27.02,26,29c0,0.91,0,10,0,10h-6V20h6v2.56c0,0,1.93-2.56,5.81-2.56 c3.97,0,7.19,2.73,7.19,8.26V39z"></path></svg></a>
+      </div>
+
+  <ul class="list">
+    <li>
+      <a href="index.html#home">Home</a>
+    </li>
+
+    <li>
+      <a href="index.html#projects">Projects</a>
+    </li>
+
+    <li>
+      <a href="index.html#contact">Contact Me</a>
+    </li>
+
+  </ul>
+
+  <p class="copyright">E-mail: <a href="mailto:marcus.zibung@gmail.com?subject=Portfolio%20Inquiry&body=Hi%20Marcus,">marcus.zibung@gmail.com</a></p>
+
+  <p class="copyright">
+    © Marcus Zibung | All Rights Reserved
+  </p>
+
+</footer>
+
+  <!-- ================================
+       SCRIPTS
+  ================================= -->
+  <script src="script.js"></script>
+  <script src="prism.js"></script>
+
+</body>
+</html>
