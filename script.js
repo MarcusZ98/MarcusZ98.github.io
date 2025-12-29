@@ -7,7 +7,7 @@ menuIcon.onclick = () => {
   if (navbar.classList.contains('active')) {
     menuImg.src = "Assets/Icons/HamburgerMenu.png";
   } else {
-    menuImg.src = "Assets/Icons/X.png";
+    menuImg.src = "Assets/Icons/cross.png";
   }    
   
   navbar.classList.toggle('active');
