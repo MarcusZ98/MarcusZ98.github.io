@@ -584,7 +584,7 @@ section {
   font-style: italic;
 }
 
-.project-details video {
+.project-details iframe {
   width: 100%; 
   height: auto;
   aspect-ratio: 16 / 9; 
