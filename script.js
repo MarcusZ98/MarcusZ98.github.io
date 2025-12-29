@@ -5,9 +5,9 @@ let navbar = document.querySelector('.navbar')
 menuIcon.onclick = () => {
 
   if (navbar.classList.contains('active')) {
-    menuImg.src = "assets/Icons/HamburgerMenu.png";
+    menuImg.src = "Assets/Icons/HamburgerMenu.png";
   } else {
-    menuImg.src = "assets/Icons/X.png";
+    menuImg.src = "Assets/Icons/X.png";
   }    
   
   navbar.classList.toggle('active');
