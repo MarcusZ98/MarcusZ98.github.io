@@ -15,14 +15,13 @@ menuIcon.onclick = () => {
 
 // typewriter.js
 document.addEventListener("DOMContentLoaded", () => {
-  const words = ["Game Developer", "Software Engineer", "Tech Enthusiast"];
+  const words = ["Game Developer", "Software Developer", "Tech Enthusiast"];
   const el = document.getElementById("typewriter");
 
   let i = 0;         // current word index
   let j = 0;         // current char count shown
   let deleting = false;
 
-  // Tunables (tweak these to taste)
   const baseType = 85;          // avg ms per keystroke when typing
   const typeJitter = 120;       // random extra ms added (0..typeJitter)
   const deleteFactor = 0.45;    // deletion is faster (smaller is faster)
@@ -38,9 +37,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if (isDeleting) d *= deleteFactor;
     // punctuation pauses (when typing)
     if (!isDeleting && /[.,!?;:]/.test(char)) d += 220;
-    // occasional human micro-pause mid-word
+    // occasional micro-pause mid-word
     if (!isDeleting && j > 0 && Math.random() < microPauseChance) d += microPauseMs;
-    // clamp
     return Math.max(minDelay, Math.round(d));
   }
 
